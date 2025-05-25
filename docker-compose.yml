@@ -3,7 +3,7 @@ version: '3.8'
 services:
   # Database Services
   postgres:
-    image: postgres:15-alpine
+    image: postgres:17-alpine
     container_name: seminote-postgres
     environment:
       POSTGRES_DB: seminote
@@ -18,7 +18,7 @@ services:
       - seminote-network
 
   redis:
-    image: redis:7-alpine
+    image: redis:7.4-alpine
     container_name: seminote-redis
     ports:
       - "6379:6379"
@@ -29,7 +29,7 @@ services:
 
   # Monitoring Services
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v3.1.0
     container_name: seminote-prometheus
     ports:
       - "9090:9090"
@@ -39,7 +39,7 @@ services:
       - seminote-network
 
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:11.4.0
     container_name: seminote-grafana
     ports:
       - "3000:3000"

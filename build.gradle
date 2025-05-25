@@ -1,15 +1,15 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.2.0' apply false
-    id 'io.spring.dependency-management' version '1.1.4' apply false
-    id 'org.sonarqube' version '4.4.1.3373'
+    id 'org.springframework.boot' version '3.4.1' apply false
+    id 'io.spring.dependency-management' version '1.1.7' apply false
+    id 'org.sonarqube' version '6.0.1.5171'
     id 'checkstyle'
 }
 
 allprojects {
     group = 'com.seminote'
     version = '0.1.0-SNAPSHOT'
-    
+
     repositories {
         mavenCentral()
         maven { url 'https://repo.spring.io/milestone' }
@@ -23,8 +23,8 @@ subprojects {
     apply plugin: 'checkstyle'
 
     java {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     configurations {
@@ -38,22 +38,22 @@ subprojects {
         implementation 'org.springframework.boot:spring-boot-starter'
         implementation 'org.springframework.boot:spring-boot-starter-actuator'
         implementation 'org.springframework.boot:spring-boot-starter-validation'
-        
+
         // Development Tools
         developmentOnly 'org.springframework.boot:spring-boot-devtools'
         annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-        
+
         // Testing
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
         testImplementation 'org.testcontainers:junit-jupiter'
         testImplementation 'org.testcontainers:postgresql'
-        testImplementation 'org.testcontainers:redis'
+        testImplementation 'org.testcontainers:testcontainers'
     }
 
     dependencyManagement {
         imports {
-            mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2023.0.0'
-            mavenBom 'org.testcontainers:testcontainers-bom:1.19.3'
+            mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2024.0.0'
+            mavenBom 'org.testcontainers:testcontainers-bom:1.20.4'
         }
     }
 
@@ -65,7 +65,7 @@ subprojects {
     }
 
     checkstyle {
-        toolVersion = '10.12.5'
+        toolVersion = '10.21.0'
         configFile = file("${rootProject.projectDir}/config/checkstyle/checkstyle.xml")
     }
 }
@@ -82,6 +82,6 @@ sonarqube {
 
 // Wrapper task
 wrapper {
-    gradleVersion = '8.5'
+    gradleVersion = '8.14.1'
     distributionType = Wrapper.DistributionType.BIN
 }
