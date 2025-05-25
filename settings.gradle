@@ -1,0 +1,12 @@
+rootProject.name = 'seminote-backend'
+
+include 'api-gateway'
+include 'user-service'
+include 'content-service'
+include 'analytics-service'
+include 'progress-service'
+include 'notification-service'
+include 'payment-service'
+include 'shared:common'
+include 'shared:security'
+include 'shared:monitoring'
