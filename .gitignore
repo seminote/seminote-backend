@@ -1,8 +1,14 @@
-# Compiled class file
+# ===================================
+# Java & JVM
+# ===================================
+
+# Compiled class files
 *.class
 
-# Log file
+# Log files
 *.log
+logs/
+*.log.*
 
 # BlueJ files
 *.ctxt
@@ -10,7 +16,7 @@
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
-# Package Files #
+# Package Files
 *.jar
 *.war
 *.nar
@@ -19,6 +25,245 @@
 *.tar.gz
 *.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+# Virtual machine crash logs
 hs_err_pid*
 replay_pid*
+
+# JVM Crash dumps
+*.hprof
+
+# ===================================
+# Gradle
+# ===================================
+
+# Gradle build output
+build/
+out/
+
+# Gradle cache and wrapper (keep wrapper jar)
+.gradle/
+gradle-app.setting
+!gradle-wrapper.jar
+!gradle-wrapper.properties
+
+# Gradle daemon
+.gradle/daemon/
+
+# ===================================
+# Spring Boot
+# ===================================
+
+# Spring Boot build info
+build-info.properties
+
+# Spring Boot application logs
+application*.log
+spring.log
+
+# Spring Boot DevTools restart trigger
+.reloadtrigger
+
+# ===================================
+# IDE Files
+# ===================================
+
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# Eclipse
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# Visual Studio Code
+.vscode/
+*.code-workspace
+
+# ===================================
+# OS Generated Files
+# ===================================
+
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.nfs*
+
+# ===================================
+# Testing & Coverage
+# ===================================
+
+# JUnit test results
+TEST-*.xml
+junit*.properties
+
+# Coverage reports
+.jacoco/
+jacoco.exec
+*.exec
+
+# SonarQube
+.sonar/
+.scannerwork/
+
+# ===================================
+# Database & Local Development
+# ===================================
+
+# H2 Database files
+*.db
+*.mv.db
+*.trace.db
+
+# Local database files
+*.sqlite
+*.sqlite3
+
+# Local environment files
+.env
+.env.local
+.env.*.local
+
+# Application properties with secrets
+application-local.yml
+application-local.yaml
+application-local.properties
+application-secrets.yml
+application-secrets.yaml
+application-secrets.properties
+
+# ===================================
+# Docker & Containers
+# ===================================
+
+# Docker volumes
+docker-volumes/
+.docker/
+
+# Docker Compose override files
+docker-compose.override.yml
+docker-compose.override.yaml
+
+# Backup files
+*.backup
+*.bak
+*.tmp
+
+# ===================================
+# Documentation & Reports
+# ===================================
+
+# Generated documentation
+docs/build/
+docs/generated/
+
+# Reports
+reports/
+target/
+
+# ===================================
+# Temporary & Cache Files
+# ===================================
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Cache directories
+.cache/
+.npm/
+.yarn/
+
+# ===================================
+# Security & Secrets
+# ===================================
+
+# Private keys and certificates
+*.pem
+*.key
+*.p12
+*.jks
+*.keystore
+*.truststore
+
+# Environment variables and secrets
+secrets/
+.secrets/
+*.secret
+
+# ===================================
+# Monitoring & Observability
+# ===================================
+
+# Micrometer/Prometheus data
+prometheus/
+grafana/data/
+
+# Application performance monitoring
+apm/
+newrelic/
+
+# ===================================
+# Microservices Specific
+# ===================================
+
+# Service discovery
+eureka/
+consul/
+
+# Configuration server
+config-repo/
+
+# ===================================
+# Build Tools & Dependencies
+# ===================================
+
+# Maven (if used alongside Gradle)
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# Node.js (if frontend is included)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
