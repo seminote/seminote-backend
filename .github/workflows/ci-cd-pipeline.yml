@@ -128,7 +128,7 @@ jobs:
 
     - name: 📈 Upload Test Results
       uses: actions/upload-artifact@v3
-      if: always()
+      if: always() && hashFiles('**/build/reports/**') != ''
       with:
         name: test-results
         path: |
@@ -217,7 +217,7 @@ jobs:
 
     - name: 📊 Upload Integration Test Results
       uses: actions/upload-artifact@v3
-      if: always()
+      if: always() && (hashFiles('**/test-results/**') != '' || hashFiles('**/logs/**') != '')
       with:
         name: integration-test-results
         path: |
@@ -270,7 +270,7 @@ jobs:
 
     - name: 📊 Upload WebRTC Test Results
       uses: actions/upload-artifact@v3
-      if: always()
+      if: always() && hashFiles('**/webrtc-test-results/**') != ''
       with:
         name: webrtc-test-results
         path: |
