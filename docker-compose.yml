@@ -3,17 +3,22 @@ version: '3.8'
 services:
   # Database Services
   postgres:
-    image: postgres:17-alpine
+    image: postgres:16
     container_name: seminote-postgres
     environment:
-      POSTGRES_DB: seminote
-      POSTGRES_USER: seminote
-      POSTGRES_PASSWORD: seminote123
+      POSTGRES_DB: seminote_dev
+      POSTGRES_USER: seminote_user
+      POSTGRES_PASSWORD: seminote_pass
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./infrastructure/docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./infrastructure/sql:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U seminote_user -d seminote_dev"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     networks:
       - seminote-network
 
@@ -24,12 +29,94 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - seminote-network
+
+  # MongoDB for Content Service
+  mongodb:
+    image: mongo:7
+    container_name: seminote-mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: seminote_admin
+      MONGO_INITDB_ROOT_PASSWORD: seminote_pass
+      MONGO_INITDB_DATABASE: seminote_content
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - seminote-network
+
+  # RabbitMQ Message Queue
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: seminote-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: seminote
+      RABBITMQ_DEFAULT_PASS: seminote_pass
+    ports:
+      - "5672:5672"   # AMQP port
+      - "15672:15672" # Management UI
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - seminote-network
+
+  # Database Management Tools
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: seminote-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@seminote.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8081:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+    networks:
+      - seminote-network
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: seminote-redis-commander
+    environment:
+      REDIS_HOSTS: local:redis:6379
+    ports:
+      - "8082:8081"
+    depends_on:
+      - redis
+    networks:
+      - seminote-network
+
+  # Swagger Editor for API Development
+  swagger-editor:
+    image: swaggerapi/swagger-editor
+    container_name: seminote-swagger-editor
+    ports:
+      - "8083:8080"
     networks:
       - seminote-network
 
   # Monitoring Services
   prometheus:
-    image: prom/prometheus:v3.1.0
+    image: prom/prometheus:v3.1.1
     container_name: seminote-prometheus
     ports:
       - "9090:9090"
@@ -37,9 +124,11 @@ services:
       - ./infrastructure/docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     networks:
       - seminote-network
+    profiles:
+      - monitoring
 
   grafana:
-    image: grafana/grafana:11.4.0
+    image: grafana/grafana:11.5.0
     container_name: seminote-grafana
     ports:
       - "3000:3000"
@@ -49,6 +138,8 @@ services:
       - grafana_data:/var/lib/grafana
     networks:
       - seminote-network
+    profiles:
+      - monitoring
 
   # Application Services (will be added as they're developed)
   api-gateway:
@@ -92,6 +183,9 @@ services:
 volumes:
   postgres_data:
   redis_data:
+  mongodb_data:
+  rabbitmq_data:
+  pgadmin_data:
   grafana_data:
 
 networks:
