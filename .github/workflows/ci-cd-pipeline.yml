@@ -10,12 +10,11 @@ on:
       environment:
         description: 'Deployment environment'
         required: true
-        default: 'development'
+        default: 'nonprod'
         type: choice
         options:
-        - development
-        - staging
-        - production
+        - nonprod
+        - prod
 
 env:
   REGISTRY: ghcr.io
@@ -339,59 +338,35 @@ jobs:
   # DEPLOYMENT JOBS
   # ============================================================================
 
-  deploy-development:
-    name: 🚀 Deploy to Development
+  deploy-nonprod:
+    name: 🧪 Deploy to Non-Production
     runs-on: ubuntu-latest
     needs: [integration-tests, webrtc-tests, docker-build]
-    if: github.ref == 'refs/heads/develop' || github.event.inputs.environment == 'development'
+    if: github.ref == 'refs/heads/develop' || github.event.inputs.environment == 'nonprod'
 
     steps:
     - name: 📥 Checkout Code
       uses: actions/checkout@v4
 
-    - name: 🚀 Deploy to Development Environment
+    - name: 🧪 Deploy to Non-Production Environment
       run: |
-        echo "🚀 Deploying to development environment..."
-        echo "Environment: development"
+        echo "🧪 Deploying to non-production environment..."
+        echo "Environment: nonprod"
         echo "Branch: ${{ github.ref_name }}"
         echo "Commit: ${{ github.sha }}"
-        # Deployment logic will be implemented here
+        # Non-production deployment logic will be implemented here
 
-    - name: 🧪 Run Smoke Tests
+    - name: 🧪 Run Integration Tests
       run: |
-        echo "🧪 Running smoke tests on development environment..."
-        # Smoke tests will be implemented here
-        echo "Smoke tests completed successfully"
+        echo "🧪 Running integration tests on nonprod environment..."
+        # Integration tests will be implemented here
+        echo "Integration tests completed successfully"
 
-  deploy-staging:
-    name: 🎭 Deploy to Staging
-    runs-on: ubuntu-latest
-    needs: [integration-tests, webrtc-tests, docker-build]
-    if: github.ref == 'refs/heads/main' || github.event.inputs.environment == 'staging'
-
-    steps:
-    - name: 📥 Checkout Code
-      uses: actions/checkout@v4
-
-    - name: 🎭 Deploy to Staging Environment
-      run: |
-        echo "🎭 Deploying to staging environment..."
-        echo "Environment: staging"
-        echo "Branch: ${{ github.ref_name }}"
-        echo "Commit: ${{ github.sha }}"
-        # Deployment logic will be implemented here
-
-    - name: 🧪 Run End-to-End Tests
-      run: |
-        echo "🧪 Running end-to-end tests on staging environment..."
-        # E2E tests will be implemented here
-        echo "End-to-end tests completed successfully"
-
-  deploy-production:
+  deploy-prod:
     name: 🌟 Deploy to Production
     runs-on: ubuntu-latest
-    needs: [deploy-staging]
-    if: github.ref == 'refs/heads/main' && github.event.inputs.environment == 'production'
+    needs: [deploy-nonprod]
+    if: github.ref == 'refs/heads/main' && github.event.inputs.environment == 'prod'
 
     steps:
     - name: 📥 Checkout Code
@@ -400,7 +375,7 @@ jobs:
     - name: 🌟 Deploy to Production Environment
       run: |
         echo "🌟 Deploying to production environment..."
-        echo "Environment: production"
+        echo "Environment: prod"
         echo "Branch: ${{ github.ref_name }}"
         echo "Commit: ${{ github.sha }}"
         # Production deployment logic will be implemented here
@@ -418,12 +393,12 @@ jobs:
   notify-completion:
     name: 📢 Notify Pipeline Completion
     runs-on: ubuntu-latest
-    needs: [deploy-development, deploy-staging, deploy-production]
+    needs: [deploy-nonprod, deploy-prod]
     if: always()
 
     steps:
     - name: 📢 Send Notification
       run: |
         echo "📢 Pipeline completed!"
-        echo "Status: ${{ needs.deploy-development.result || 'skipped' }} (dev), ${{ needs.deploy-staging.result || 'skipped' }} (staging), ${{ needs.deploy-production.result || 'skipped' }} (prod)"
+        echo "Status: ${{ needs.deploy-nonprod.result || 'skipped' }} (nonprod), ${{ needs.deploy-prod.result || 'skipped' }} (prod)"
         # Notification logic (Slack, Teams, etc.) will be implemented here
