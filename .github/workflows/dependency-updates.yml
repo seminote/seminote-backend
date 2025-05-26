@@ -41,7 +41,6 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
 
     - name: 🐍 Set up Python ${{ env.PYTHON_VERSION }}
       uses: actions/setup-python@v4
@@ -102,7 +101,6 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
 
     - name: 📦 Update Gradle Dependencies
       run: |
