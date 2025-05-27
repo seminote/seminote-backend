@@ -126,16 +126,17 @@ jobs:
         echo "🔒 Running security vulnerability scan..."
         ./gradlew dependencyCheckAnalyze --no-daemon || true
 
-    - name: 📈 Upload Test Results
-      uses: actions/upload-artifact@v3
-      if: always() && hashFiles('**/build/reports/**') != ''
-      with:
-        name: test-results
-        path: |
-          **/build/reports/tests/
-          **/build/reports/jacoco/
-          **/build/reports/dependency-check/
-        retention-days: 30
+    # TODO: Add artifact upload when actual Java projects are implemented
+    # - name: 📈 Upload Test Results
+    #   uses: actions/upload-artifact@v3
+    #   if: always() && hashFiles('**/build/reports/**') != ''
+    #   with:
+    #     name: test-results
+    #     path: |
+    #       **/build/reports/tests/
+    #       **/build/reports/jacoco/
+    #       **/build/reports/dependency-check/
+    #     retention-days: 30
 
   integration-tests:
     name: 🧪 Integration Tests
@@ -215,15 +216,16 @@ jobs:
         echo "🧪 Running comprehensive integration tests..."
         ./scripts/test-backend-integration.sh
 
-    - name: 📊 Upload Integration Test Results
-      uses: actions/upload-artifact@v3
-      if: always() && (hashFiles('**/test-results/**') != '' || hashFiles('**/logs/**') != '')
-      with:
-        name: integration-test-results
-        path: |
-          **/test-results/
-          **/logs/
-        retention-days: 30
+    # TODO: Add artifact upload when actual test outputs are generated
+    # - name: 📊 Upload Integration Test Results
+    #   uses: actions/upload-artifact@v3
+    #   if: always() && (hashFiles('**/test-results/**') != '' || hashFiles('**/logs/**') != '')
+    #   with:
+    #     name: integration-test-results
+    #     path: |
+    #       **/test-results/
+    #       **/logs/
+    #     retention-days: 30
 
   webrtc-tests:
     name: 🌐 WebRTC & Real-time Tests
@@ -268,14 +270,15 @@ jobs:
         # WebRTC tests will be implemented here
         echo "WebRTC tests completed successfully"
 
-    - name: 📊 Upload WebRTC Test Results
-      uses: actions/upload-artifact@v3
-      if: always() && hashFiles('**/webrtc-test-results/**') != ''
-      with:
-        name: webrtc-test-results
-        path: |
-          **/webrtc-test-results/
-        retention-days: 30
+    # TODO: Add artifact upload when actual WebRTC test outputs are generated
+    # - name: 📊 Upload WebRTC Test Results
+    #   uses: actions/upload-artifact@v3
+    #   if: always() && hashFiles('**/webrtc-test-results/**') != ''
+    #   with:
+    #     name: webrtc-test-results
+    #     path: |
+    #       **/webrtc-test-results/
+    #     retention-days: 30
 
   # ============================================================================
   # DOCKER BUILD & SECURITY JOBS
