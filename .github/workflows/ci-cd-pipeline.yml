@@ -188,10 +188,10 @@ jobs:
           --name seminote-postgres \
           --network seminote-network \
           -p 5432:5432 \
-          -e POSTGRES_DB=seminote_test \
+          -e POSTGRES_DB=seminote_dev \
           -e POSTGRES_USER=seminote_user \
           -e POSTGRES_PASSWORD=seminote_pass \
-          --health-cmd="pg_isready -U seminote_user -d seminote_test" \
+          --health-cmd="pg_isready -U seminote_user -d seminote_dev" \
           --health-interval=10s \
           --health-timeout=5s \
           --health-retries=5 \
@@ -252,9 +252,16 @@ jobs:
           -e REDIS_HOSTS=local:seminote-redis:6379 \
           rediscommander/redis-commander:latest
 
+        # Start Swagger Editor with expected name
+        docker run -d \
+          --name seminote-swagger-editor \
+          --network seminote-network \
+          -p 8080:8080 \
+          swaggerapi/swagger-editor:latest
+
         # Wait for services to be healthy
         echo "⏳ Waiting for services to be healthy..."
-        timeout 120 bash -c 'until docker exec seminote-postgres pg_isready -U seminote_user -d seminote_test; do sleep 2; done'
+        timeout 120 bash -c 'until docker exec seminote-postgres pg_isready -U seminote_user -d seminote_dev; do sleep 2; done'
         timeout 60 bash -c 'until docker exec seminote-redis redis-cli ping; do sleep 2; done'
         timeout 60 bash -c 'until docker exec seminote-mongo mongosh --eval "db.runCommand(\"ping\").ok" --quiet; do sleep 2; done'
         timeout 60 bash -c 'until docker exec seminote-rabbitmq rabbitmq-diagnostics -q ping; do sleep 2; done'
@@ -265,7 +272,7 @@ jobs:
       env:
         POSTGRES_HOST: localhost
         POSTGRES_PORT: 5432
-        POSTGRES_DB: seminote_test
+        POSTGRES_DB: seminote_dev
         POSTGRES_USER: seminote_user
         POSTGRES_PASSWORD: seminote_pass
         REDIS_HOST: localhost
@@ -287,8 +294,8 @@ jobs:
       if: always()
       run: |
         echo "🧹 Cleaning up infrastructure services..."
-        docker stop seminote-postgres seminote-redis seminote-mongo seminote-rabbitmq seminote-pgadmin seminote-redis-commander || true
-        docker rm seminote-postgres seminote-redis seminote-mongo seminote-rabbitmq seminote-pgadmin seminote-redis-commander || true
+        docker stop seminote-postgres seminote-redis seminote-mongo seminote-rabbitmq seminote-pgadmin seminote-redis-commander seminote-swagger-editor || true
+        docker rm seminote-postgres seminote-redis seminote-mongo seminote-rabbitmq seminote-pgadmin seminote-redis-commander seminote-swagger-editor || true
         docker network rm seminote-network || true
 
     # TODO: Add artifact upload when actual test outputs are generated

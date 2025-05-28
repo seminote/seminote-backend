@@ -6,10 +6,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 class AnalyticsServiceApplicationTest {
+
     @Test
-    void contextLoads() {}
-    
+    void contextLoads() {
+        // Test that the application context loads successfully
+    }
+
     @Test
     @Tag("piano")
-    void pianoAnalyticsLoads() {}
+    void pianoAnalyticsLoads() {
+        // Test that piano analytics functionality loads
+    }
 }

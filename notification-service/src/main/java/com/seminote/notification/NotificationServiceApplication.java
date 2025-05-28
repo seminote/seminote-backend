@@ -7,13 +7,26 @@ import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
 @RestController
-public class NotificationServiceApplication {
-    public static void main(String[] args) {
+public final class NotificationServiceApplication {
+
+    private NotificationServiceApplication() {
+        // Private constructor to prevent instantiation
+    }
+
+    /**
+     * Main method to start the Notification Service application.
+     * @param args command line arguments
+     */
+    public static void main(final String[] args) {
         SpringApplication.run(NotificationServiceApplication.class, args);
     }
-    
+
+    /**
+     * Health check endpoint for the Notification Service.
+     * @return health status message
+     */
     @GetMapping("/health")
-    public String health() {
+    public static String health() {
         return "🔔 Seminote Notification Service is running! Keeping piano learners engaged.";
     }
 }

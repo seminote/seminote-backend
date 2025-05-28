@@ -6,10 +6,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 class NotificationServiceApplicationTest {
+
     @Test
-    void contextLoads() {}
-    
+    void contextLoads() {
+        // Test that the application context loads successfully
+    }
+
     @Test
     @Tag("piano")
-    void pianoNotificationLoads() {}
+    void pianoNotificationLoads() {
+        // Test that piano notification functionality loads
+    }
 }
