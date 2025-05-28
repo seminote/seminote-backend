@@ -4,6 +4,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.7' apply false
     id 'org.sonarqube' version '6.0.1.5171'
     id 'checkstyle'
+    id 'jacoco'
 }
 
 allprojects {
@@ -19,6 +20,7 @@ allprojects {
 subprojects {
     apply plugin: 'java'
     apply plugin: 'checkstyle'
+    apply plugin: 'jacoco'
 
     // Only apply Spring Boot to service modules, not shared libraries
     if (!project.path.startsWith(':shared')) {
@@ -81,6 +83,32 @@ subprojects {
     checkstyle {
         toolVersion = '10.21.0'
         configFile = file("${rootProject.projectDir}/config/checkstyle/checkstyle.xml")
+    }
+
+    jacoco {
+        toolVersion = "0.8.8"
+    }
+
+    jacocoTestReport {
+        reports {
+            xml.required = true
+            html.required = true
+        }
+        finalizedBy jacocoTestCoverageVerification
+    }
+
+    jacocoTestCoverageVerification {
+        violationRules {
+            rule {
+                limit {
+                    minimum = 0.60
+                }
+            }
+        }
+    }
+
+    test {
+        finalizedBy jacocoTestReport
     }
 }
 

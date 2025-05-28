@@ -143,31 +143,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: validate-environment
 
-    services:
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_DB: seminote_test
-          POSTGRES_USER: seminote_user
-          POSTGRES_PASSWORD: seminote_pass
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-
-      redis:
-        image: redis:7-alpine
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 6379:6379
-
     steps:
     - name: 📥 Checkout Code
       uses: actions/checkout@v4
@@ -203,6 +178,89 @@ jobs:
     - name: 🔧 Make Scripts Executable
       run: chmod +x scripts/*.sh
 
+    - name: 🐳 Start Infrastructure Services
+      run: |
+        echo "🐳 Starting infrastructure services with expected names..."
+        docker network create seminote-network || true
+
+        # Start PostgreSQL with expected name
+        docker run -d \
+          --name seminote-postgres \
+          --network seminote-network \
+          -p 5432:5432 \
+          -e POSTGRES_DB=seminote_test \
+          -e POSTGRES_USER=seminote_user \
+          -e POSTGRES_PASSWORD=seminote_pass \
+          --health-cmd="pg_isready -U seminote_user -d seminote_test" \
+          --health-interval=10s \
+          --health-timeout=5s \
+          --health-retries=5 \
+          postgres:16
+
+        # Start Redis with expected name
+        docker run -d \
+          --name seminote-redis \
+          --network seminote-network \
+          -p 6379:6379 \
+          --health-cmd="redis-cli ping" \
+          --health-interval=10s \
+          --health-timeout=5s \
+          --health-retries=5 \
+          redis:7-alpine
+
+        # Start MongoDB with expected name
+        docker run -d \
+          --name seminote-mongo \
+          --network seminote-network \
+          -p 27017:27017 \
+          -e MONGO_INITDB_ROOT_USERNAME=seminote_user \
+          -e MONGO_INITDB_ROOT_PASSWORD=seminote_pass \
+          --health-cmd="mongosh --eval 'db.runCommand(\"ping\").ok' --quiet" \
+          --health-interval=10s \
+          --health-timeout=5s \
+          --health-retries=5 \
+          mongo:7
+
+        # Start RabbitMQ with expected name
+        docker run -d \
+          --name seminote-rabbitmq \
+          --network seminote-network \
+          -p 5672:5672 \
+          -p 15672:15672 \
+          -e RABBITMQ_DEFAULT_USER=seminote_user \
+          -e RABBITMQ_DEFAULT_PASS=seminote_pass \
+          --health-cmd="rabbitmq-diagnostics -q ping" \
+          --health-interval=10s \
+          --health-timeout=5s \
+          --health-retries=5 \
+          rabbitmq:3-management
+
+        # Start pgAdmin with expected name
+        docker run -d \
+          --name seminote-pgadmin \
+          --network seminote-network \
+          -p 5050:80 \
+          -e PGADMIN_DEFAULT_EMAIL=admin@seminote.com \
+          -e PGADMIN_DEFAULT_PASSWORD=seminote_pass \
+          dpage/pgadmin4:latest
+
+        # Start Redis Commander with expected name
+        docker run -d \
+          --name seminote-redis-commander \
+          --network seminote-network \
+          -p 8081:8081 \
+          -e REDIS_HOSTS=local:seminote-redis:6379 \
+          rediscommander/redis-commander:latest
+
+        # Wait for services to be healthy
+        echo "⏳ Waiting for services to be healthy..."
+        timeout 120 bash -c 'until docker exec seminote-postgres pg_isready -U seminote_user -d seminote_test; do sleep 2; done'
+        timeout 60 bash -c 'until docker exec seminote-redis redis-cli ping; do sleep 2; done'
+        timeout 60 bash -c 'until docker exec seminote-mongo mongosh --eval "db.runCommand(\"ping\").ok" --quiet; do sleep 2; done'
+        timeout 60 bash -c 'until docker exec seminote-rabbitmq rabbitmq-diagnostics -q ping; do sleep 2; done'
+
+        echo "✅ All services are healthy and ready!"
+
     - name: 🧪 Run Integration Tests
       env:
         POSTGRES_HOST: localhost
@@ -212,9 +270,26 @@ jobs:
         POSTGRES_PASSWORD: seminote_pass
         REDIS_HOST: localhost
         REDIS_PORT: 6379
+        MONGO_HOST: localhost
+        MONGO_PORT: 27017
+        MONGO_USER: seminote_user
+        MONGO_PASSWORD: seminote_pass
+        RABBITMQ_HOST: localhost
+        RABBITMQ_PORT: 5672
+        RABBITMQ_MANAGEMENT_PORT: 15672
+        RABBITMQ_USER: seminote_user
+        RABBITMQ_PASSWORD: seminote_pass
       run: |
         echo "🧪 Running comprehensive integration tests..."
         ./scripts/test-backend-integration.sh
+
+    - name: 🧹 Cleanup Infrastructure Services
+      if: always()
+      run: |
+        echo "🧹 Cleaning up infrastructure services..."
+        docker stop seminote-postgres seminote-redis seminote-mongo seminote-rabbitmq seminote-pgadmin seminote-redis-commander || true
+        docker rm seminote-postgres seminote-redis seminote-mongo seminote-rabbitmq seminote-pgadmin seminote-redis-commander || true
+        docker network rm seminote-network || true
 
     # TODO: Add artifact upload when actual test outputs are generated
     # - name: 📊 Upload Integration Test Results
