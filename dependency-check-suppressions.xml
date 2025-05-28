@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+    <!-- 
+    Dependency Check Suppressions for Seminote Piano Learning Platform
+    
+    This file contains suppressions for known false positives in dependency vulnerability scanning.
+    Each suppression should include a justification and review date.
+    -->
+    
+    <!-- Example suppression for development/testing dependencies -->
+    <!--
+    <suppress>
+        <notes><![CDATA[
+        This is a development-only dependency used for testing piano audio processing.
+        Not included in production builds.
+        Review Date: 2025-01-01
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.example/test\-dependency@.*$</packageUrl>
+        <cve>CVE-2023-XXXXX</cve>
+    </suppress>
+    -->
+    
+</suppressions>
