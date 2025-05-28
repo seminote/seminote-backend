@@ -7,11 +7,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Seminote User Service Application
- * 
+ *
  * This microservice handles all user-related functionality for the Seminote
  * Piano Learning Platform, including user registration, authentication,
  * profile management, and piano learning preferences.
- * 
+ *
  * Key Features:
  * - User registration and authentication
  * - Piano skill level assessment
@@ -21,37 +21,53 @@ import org.springframework.web.bind.annotation.RestController;
  * - Integration with piano hardware/software
  */
 @SpringBootApplication
-@RestController
-public class UserServiceApplication {
+public final class UserServiceApplication {
 
-    public static void main(String[] args) {
+    private UserServiceApplication() {
+        // Private constructor to prevent instantiation
+    }
+
+    /**
+     * Main method to start the User Service application.
+     * @param args command line arguments
+     */
+    public static void main(final String[] args) {
         SpringApplication.run(UserServiceApplication.class, args);
     }
 
     /**
-     * Health check endpoint for the User Service
-     * @return Health status message
+     * REST controller for user endpoints.
      */
-    @GetMapping("/health")
-    public String health() {
-        return "🎹 Seminote User Service is running! Managing piano learners worldwide.";
-    }
+    @RestController
+    public static class UserController {
 
-    /**
-     * User service status endpoint
-     * @return Service status and capabilities
-     */
-    @GetMapping("/users/status")
-    public String userServiceStatus() {
-        return "👥 User Service Status: ACTIVE | Features: Registration, Authentication, Profiles, Piano Skills Assessment";
-    }
+        /**
+         * Health check endpoint for the User Service.
+         * @return Health status message
+         */
+        @GetMapping("/health")
+        public String health() {
+            return "🎹 Seminote User Service is running! Managing piano learners worldwide.";
+        }
 
-    /**
-     * Piano learner statistics endpoint
-     * @return Current platform statistics
-     */
-    @GetMapping("/users/stats")
-    public String userStats() {
-        return "📊 Piano Learners: 0 registered | Skill Levels: Beginner to Advanced | Practice Sessions: 0 completed";
+        /**
+         * User service status endpoint.
+         * @return Service status and capabilities
+         */
+        @GetMapping("/users/status")
+        public String userServiceStatus() {
+            return "👥 User Service Status: ACTIVE | Features: Registration, Authentication, "
+                    + "Profiles, Piano Skills Assessment";
+        }
+
+        /**
+         * Piano learner statistics endpoint.
+         * @return Current platform statistics
+         */
+        @GetMapping("/users/stats")
+        public String userStats() {
+            return "📊 Piano Learners: 0 registered | Skill Levels: Beginner to Advanced | "
+                    + "Practice Sessions: 0 completed";
+        }
     }
 }

@@ -1,27 +1,35 @@
 package com.seminote.monitoring;
 
+import java.util.logging.Logger;
+
 /**
- * Seminote Monitoring Utilities
- * 
+ * Seminote Monitoring Utilities.
+ *
  * Shared monitoring and metrics for piano learning platform
  */
-public class SeminoteMonitoring {
-    
+public final class SeminoteMonitoring {
+
+    private static final Logger LOGGER = Logger.getLogger(SeminoteMonitoring.class.getName());
+
+    private SeminoteMonitoring() {
+        // Private constructor to prevent instantiation
+    }
+
     /**
-     * Record WebRTC latency metric
+     * Record WebRTC latency metric.
      * @param latencyMs Latency in milliseconds
      */
-    public static void recordWebRTCLatency(int latencyMs) {
+    public static void recordWebRTCLatency(final int latencyMs) {
         // Placeholder for metrics recording
-        System.out.println("📊 WebRTC Latency: " + latencyMs + "ms");
+        LOGGER.info("📊 WebRTC Latency: " + latencyMs + "ms");
     }
-    
+
     /**
-     * Record piano note detection time
+     * Record piano note detection time.
      * @param detectionTimeMs Detection time in milliseconds
      */
-    public static void recordNoteDetectionTime(int detectionTimeMs) {
+    public static void recordNoteDetectionTime(final int detectionTimeMs) {
         // Placeholder for metrics recording
-        System.out.println("🎹 Note Detection: " + detectionTimeMs + "ms");
+        LOGGER.info("🎹 Note Detection: " + detectionTimeMs + "ms");
     }
 }

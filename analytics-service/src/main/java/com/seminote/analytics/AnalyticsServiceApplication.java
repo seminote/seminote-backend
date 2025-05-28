@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
-@RestController
 public final class AnalyticsServiceApplication {
 
     private AnalyticsServiceApplication() {
@@ -22,11 +21,18 @@ public final class AnalyticsServiceApplication {
     }
 
     /**
-     * Health check endpoint for the Analytics Service.
-     * @return health status message
+     * REST controller for health endpoints.
      */
-    @GetMapping("/health")
-    public static String health() {
-        return "📊 Seminote Analytics Service is running! Tracking piano learning progress.";
+    @RestController
+    public static class HealthController {
+
+        /**
+         * Health check endpoint for the Analytics Service.
+         * @return health status message
+         */
+        @GetMapping("/health")
+        public String health() {
+            return "📊 Seminote Analytics Service is running! Tracking piano learning progress.";
+        }
     }
 }

@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
-@RestController
 public final class NotificationServiceApplication {
 
     private NotificationServiceApplication() {
@@ -22,11 +21,18 @@ public final class NotificationServiceApplication {
     }
 
     /**
-     * Health check endpoint for the Notification Service.
-     * @return health status message
+     * REST controller for health endpoints.
      */
-    @GetMapping("/health")
-    public static String health() {
-        return "🔔 Seminote Notification Service is running! Keeping piano learners engaged.";
+    @RestController
+    public static class HealthController {
+
+        /**
+         * Health check endpoint for the Notification Service.
+         * @return health status message
+         */
+        @GetMapping("/health")
+        public String health() {
+            return "🔔 Seminote Notification Service is running! Keeping piano learners engaged.";
+        }
     }
 }
