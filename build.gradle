@@ -4,6 +4,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.7' apply false
     id 'org.sonarqube' version '6.0.1.5171'
     id 'checkstyle'
+    id 'jacoco'
 }
 
 allprojects {
@@ -18,9 +19,16 @@ allprojects {
 
 subprojects {
     apply plugin: 'java'
-    apply plugin: 'org.springframework.boot'
-    apply plugin: 'io.spring.dependency-management'
     apply plugin: 'checkstyle'
+    apply plugin: 'jacoco'
+
+    // Only apply Spring Boot to service modules, not shared libraries
+    if (!project.path.startsWith(':shared')) {
+        apply plugin: 'org.springframework.boot'
+        apply plugin: 'io.spring.dependency-management'
+    } else {
+        apply plugin: 'io.spring.dependency-management'
+    }
 
     java {
         sourceCompatibility = JavaVersion.VERSION_21
@@ -34,20 +42,28 @@ subprojects {
     }
 
     dependencies {
-        // Spring Boot Starters
-        implementation 'org.springframework.boot:spring-boot-starter'
-        implementation 'org.springframework.boot:spring-boot-starter-actuator'
-        implementation 'org.springframework.boot:spring-boot-starter-validation'
+        // Different dependencies for services vs shared libraries
+        if (!project.path.startsWith(':shared')) {
+            // Spring Boot Starters for services
+            implementation 'org.springframework.boot:spring-boot-starter'
+            implementation 'org.springframework.boot:spring-boot-starter-web'
+            implementation 'org.springframework.boot:spring-boot-starter-actuator'
+            implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-        // Development Tools
-        developmentOnly 'org.springframework.boot:spring-boot-devtools'
-        annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+            // Development Tools
+            developmentOnly 'org.springframework.boot:spring-boot-devtools'
+            annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
-        // Testing
-        testImplementation 'org.springframework.boot:spring-boot-starter-test'
-        testImplementation 'org.testcontainers:junit-jupiter'
-        testImplementation 'org.testcontainers:postgresql'
-        testImplementation 'org.testcontainers:testcontainers'
+            // Testing
+            testImplementation 'org.springframework.boot:spring-boot-starter-test'
+            testImplementation 'org.testcontainers:junit-jupiter'
+            testImplementation 'org.testcontainers:postgresql'
+            testImplementation 'org.testcontainers:testcontainers'
+        } else {
+            // Minimal dependencies for shared libraries
+            testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
+            testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.10.1'
+        }
     }
 
     dependencyManagement {
@@ -67,6 +83,32 @@ subprojects {
     checkstyle {
         toolVersion = '10.21.0'
         configFile = file("${rootProject.projectDir}/config/checkstyle/checkstyle.xml")
+    }
+
+    jacoco {
+        toolVersion = "0.8.12"
+    }
+
+    jacocoTestReport {
+        reports {
+            xml.required = true
+            html.required = true
+        }
+        finalizedBy jacocoTestCoverageVerification
+    }
+
+    jacocoTestCoverageVerification {
+        violationRules {
+            rule {
+                limit {
+                    minimum = 0.00  // Disabled for development environment setup
+                }
+            }
+        }
+    }
+
+    test {
+        finalizedBy jacocoTestReport
     }
 }
 

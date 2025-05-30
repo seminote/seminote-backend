@@ -52,26 +52,27 @@ The Seminote Backend provides enterprise-grade microservices that handle core bu
 ## Technology Stack
 
 ### Core Framework
-- **Java 17+** - Primary programming language
-- **Spring Boot 3.x** - Main application framework
-- **Spring Security** - Authentication and authorization
-- **Spring Data JPA** - Data access layer
-- **Spring Cloud Gateway** - API gateway and routing
-- **Spring WebFlux** - Reactive programming for high-throughput
+- **Java 21** - Latest LTS with virtual threads and performance improvements
+- **Spring Boot 3.4.1** - Latest stable with enhanced observability
+- **Spring Security 6** - Modern authentication and authorization
+- **Spring Data JPA** - Data access layer with enhanced query capabilities
+- **Spring Cloud Gateway** - API gateway and routing with load balancing
+- **Spring WebFlux** - Reactive programming for high-throughput scenarios
 
 ### Database & Storage
-- **PostgreSQL 15+** - Primary relational database
-- **Redis 7+** - Caching and session storage
-- **MongoDB** - Document storage for content
+- **PostgreSQL 16** - Latest with enhanced JSON and performance features
+- **Redis 7.4** - Advanced caching with Redis Functions and ACL
+- **MongoDB 7** - Document storage with Queryable Encryption
+- **RabbitMQ 3** - Message queuing with management interface
 - **Flyway** - Database migration management
 - **HikariCP** - High-performance connection pooling
 
 ### Build & Development
-- **Gradle 8+** - Primary build tool
-- **Spring Boot Buildpacks** - Cloud-native containerization
+- **Gradle 8.14.1** - Latest build automation with enhanced performance
+- **Docker & Docker Compose** - Containerized development environment
 - **TestContainers** - Integration testing with real databases
-- **JUnit 5** - Testing framework
-- **Mockito** - Mocking framework
+- **JUnit 5** - Modern testing framework with parallel execution
+- **Mockito** - Advanced mocking framework
 
 ### Monitoring & Observability
 - **Spring Boot Actuator** - Production-ready monitoring
@@ -89,36 +90,50 @@ The Seminote Backend provides enterprise-grade microservices that handle core bu
 ## Getting Started
 
 ### Prerequisites
-- Java 17 or later
-- Gradle 8.0 or later
-- Docker and Docker Compose
-- PostgreSQL 15+ (for local development)
-- Redis 7+ (for local development)
+- **Java 21** or later (LTS with virtual threads)
+- **Node.js 18+** (for WebRTC development)
+- **Python 3.9+** (for ML service integration)
+- **Docker and Docker Compose** (for containerized development)
+- **Git** (for version control)
 
-### Installation
+### Quick Start
 ```bash
 # Clone the repository
 git clone https://github.com/seminote/seminote-backend.git
 cd seminote-backend
 
+# One-command development environment setup
+./scripts/start-dev-environment.sh
+
+# Validate environment
+./scripts/validate-backend-environment.sh
+
+# Run integration tests
+./scripts/test-backend-integration.sh
+```
+
+### Development Environment Setup
+The repository includes a comprehensive development environment with:
+
+- **PostgreSQL 16** - Primary database with health checks
+- **Redis 7.4** - Caching and session storage
+- **MongoDB 7** - Document storage for content
+- **RabbitMQ 3** - Message queuing with management UI
+- **pgAdmin** - PostgreSQL management ([http://localhost:8081](http://localhost:8081))
+- **Redis Commander** - Redis data browser ([http://localhost:8082](http://localhost:8082))
+- **Swagger Editor** - API documentation ([http://localhost:8083](http://localhost:8083))
+
+### Manual Setup (Alternative)
+```bash
 # Build all services
 ./gradlew build
 
-# Run with Docker Compose (recommended for development)
+# Start services with Docker Compose
 docker-compose up -d
 
-# Or run individual services
-./gradlew :user-service:bootRun
-./gradlew :content-service:bootRun
-./gradlew :analytics-service:bootRun
+# Check service health
+./scripts/show-environment-status.sh
 ```
-
-### Development Setup
-1. Install Java 17+ and Gradle 8+
-2. Set up local PostgreSQL and Redis instances
-3. Copy `application-local.yml.template` to `application-local.yml`
-4. Configure database connections and API keys
-5. Run `./gradlew bootRun` for each service
 
 ## Project Structure
 
@@ -183,39 +198,177 @@ seminote-backend/
 - **Database Connections**: Optimized connection pooling
 - **Memory Usage**: <512MB per service instance
 
+## CI/CD Pipeline
+
+### 🚀 GitHub Actions Workflows
+
+The repository includes a comprehensive CI/CD pipeline with multiple workflows:
+
+#### **Main CI/CD Pipeline** (`.github/workflows/ci-cd-pipeline.yml`)
+- **Triggers**: Push to main/develop, PRs, manual dispatch
+- **Environments**: Nonprod (develop branch) → Prod (main branch + approval)
+- **Duration**: ~20 seconds for full pipeline execution
+
+**Pipeline Stages:**
+1. **🔍 Environment Validation** - Java 21, Node.js 18, Python 3.9 setup
+2. **🔍 Code Quality & Security** - Gradle build, tests, security scanning
+3. **🧪 Integration Tests** - PostgreSQL, Redis, MongoDB testing
+4. **🌐 WebRTC Tests** - Real-time audio streaming validation
+5. **🐳 Docker Build & Security** - Container builds with Trivy scanning
+6. **🚀 Deployment** - Automated deployment to nonprod/prod
+
+#### **Dependency Management** (`.github/workflows/dependency-updates.yml`)
+- **Schedule**: Weekly (Mondays at 9 AM UTC)
+- **Features**: Automated security updates, PR creation, multi-ecosystem support
+- **Scope**: Gradle, npm, pip dependencies
+
+#### **Performance Monitoring** (`.github/workflows/performance-monitoring.yml`)
+- **Schedule**: Daily (2 AM UTC)
+- **Tests**: Database performance, WebRTC latency, API load testing
+- **Targets**: <5ms WebRTC latency, >1000 RPS API throughput
+
+#### **Release Management** (`.github/workflows/release-management.yml`)
+- **Triggers**: Git tags, manual dispatch
+- **Features**: Semantic versioning, automated release notes, Docker publishing
+
+### 🎯 Performance Targets
+
+| Component | Target | Validation |
+|-----------|--------|------------|
+| **WebRTC Latency** | <5ms | ✅ Automated testing |
+| **Piano Note Detection** | <10ms | ✅ Seminote-specific metrics |
+| **API Response Time** | <100ms | ✅ Load testing |
+| **Database Performance** | <2s/1000 records | ✅ Benchmark testing |
+| **Throughput** | >1000 RPS | ✅ Performance monitoring |
+
+### 🔒 Security & Quality Gates
+
+- **Code Coverage**: >90% required for merge
+- **Security Scanning**: Dependency vulnerabilities, container security
+- **Quality Checks**: SonarQube analysis, code style validation
+- **Integration Testing**: Full service stack validation
+
+### 📊 Monitoring & Observability
+
+- **Daily Performance Reports**: Database, WebRTC, API metrics
+- **Security Alerts**: Automated vulnerability notifications
+- **Build Status**: Real-time pipeline status and notifications
+- **Artifact Management**: Test reports, performance data retention
+
 ## Testing Strategy
 
 ### Unit Tests
-- JUnit 5 with Mockito
-- Test coverage >80%
-- Fast execution (<30 seconds)
+- **JUnit 5** with Mockito for comprehensive unit testing
+- **Test Coverage**: >90% required (enforced by pipeline)
+- **Execution Time**: <30 seconds for fast feedback
 
 ### Integration Tests
-- TestContainers for database testing
-- Spring Boot Test for full context testing
-- API contract testing
+- **TestContainers** for real database testing
+- **Spring Boot Test** for full application context
+- **API Contract Testing** with comprehensive validation
+- **WebRTC Testing** for real-time audio streaming
 
 ### Performance Tests
-- Load testing with JMeter
-- Database performance testing
-- Memory and CPU profiling
+- **Database Performance**: PostgreSQL, Redis, MongoDB benchmarking
+- **WebRTC Latency**: <5ms target for piano audio streaming
+- **API Load Testing**: >1000 RPS throughput validation
+- **Memory Profiling**: <512MB per service instance
 
 ## Deployment
 
-### Local Development
+### 🏠 Local Development
 ```bash
-# Start all services with Docker Compose
+# Quick start with all services
+./scripts/start-dev-environment.sh
+
+# Or manual Docker Compose
 docker-compose up -d
 
 # Check service health
-curl http://localhost:8080/actuator/health
+./scripts/show-environment-status.sh
+
+# Access management interfaces
+open http://localhost:8081  # pgAdmin
+open http://localhost:8082  # Redis Commander
+open http://localhost:8083  # Swagger Editor
 ```
 
-### Production Deployment
-- **Container Registry**: AWS ECR
-- **Orchestration**: Kubernetes on AWS EKS
-- **Service Mesh**: Istio for traffic management
-- **Monitoring**: Prometheus + Grafana
+### 🧪 Nonprod Environment
+- **Trigger**: Automatic deployment on `develop` branch push
+- **Purpose**: Integration testing, feature validation
+- **Access**: Internal development team
+- **Database**: Nonprod PostgreSQL, Redis, MongoDB instances
+
+### 🌟 Production Environment
+- **Trigger**: Manual deployment on `main` branch (requires approval)
+- **Purpose**: Live production services
+- **Access**: End users and production monitoring
+- **Database**: Production-grade PostgreSQL, Redis, MongoDB clusters
+
+### 🚀 Deployment Pipeline
+```mermaid
+graph TD
+    A[Code Push] --> B[CI/CD Pipeline]
+    B --> C{Branch?}
+    C -->|develop| D[Deploy to Nonprod]
+    C -->|main + approval| E[Deploy to Prod]
+    D --> F[Integration Tests]
+    E --> G[Production Monitoring]
+```
+
+### 🏗️ Infrastructure
+- **Container Registry**: GitHub Container Registry (ghcr.io)
+- **Orchestration**: Kubernetes on AWS EKS (planned)
+- **Service Mesh**: Istio for traffic management (planned)
+- **Monitoring**: Prometheus + Grafana integration
+- **Security**: Trivy container scanning, dependency vulnerability checks
+
+## Development Workflow
+
+### 🔄 Branch Strategy
+- **`main`** - Production-ready code, protected branch
+- **`develop`** - Integration branch for features
+- **`story/SEM-XX-description`** - Feature branches following Jira ticket naming
+- **`hotfix/description`** - Critical production fixes
+
+### 📝 Development Process
+1. **Create Feature Branch**: `git checkout -b story/SEM-XX-description`
+2. **Develop & Test**: Use local development environment
+3. **Validate**: Run `./scripts/validate-backend-environment.sh`
+4. **Test**: Execute `./scripts/test-backend-integration.sh`
+5. **Push**: Automatic CI/CD pipeline validation
+6. **Pull Request**: Create PR to `develop` or `main`
+7. **Review**: Code review and pipeline validation
+8. **Deploy**: Automatic deployment to nonprod/prod
+
+### 🧪 Testing Workflow
+```bash
+# Run all validation
+./scripts/validate-backend-environment.sh
+
+# Run integration tests
+./scripts/test-backend-integration.sh
+
+# Check environment status
+./scripts/show-environment-status.sh
+
+# Manual testing with management UIs
+open http://localhost:8081  # pgAdmin
+open http://localhost:8082  # Redis Commander
+```
+
+### 📊 Quality Gates
+- **✅ All tests pass** - Unit, integration, and performance tests
+- **✅ Code coverage >90%** - Enforced by pipeline
+- **✅ Security scan clean** - No high/critical vulnerabilities
+- **✅ Performance targets met** - WebRTC <5ms, API <100ms
+- **✅ Code review approved** - Peer review required
+
+### 🚀 Deployment Process
+- **Nonprod**: Automatic on `develop` branch merge
+- **Prod**: Manual trigger on `main` branch (requires approval)
+- **Rollback**: Automated rollback on health check failures
+- **Monitoring**: Real-time performance and error tracking
 
 ## Contributing
 
