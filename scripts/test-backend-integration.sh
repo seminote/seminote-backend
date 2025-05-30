@@ -148,7 +148,7 @@ run_test "Environment Template Exists" \
     "[ -f .env.development.template ]"
 
 run_test "Docker Compose Configuration" \
-    "docker-compose config > /dev/null 2>&1"
+    "docker compose config > /dev/null 2>&1"
 
 run_test "Infrastructure SQL Scripts" \
     "[ -f infrastructure/sql/01-init-databases.sql ]"
@@ -260,9 +260,9 @@ else
     print_status "❌ Some tests failed. Please review and fix issues." "error"
     echo ""
     print_status "Common solutions:" "info"
-    echo "  - Ensure all containers are running: docker-compose up -d"
-    echo "  - Check container logs: docker-compose logs [service-name]"
-    echo "  - Restart failed services: docker-compose restart [service-name]"
+    echo "  - Ensure all containers are running: docker compose up -d"
+    echo "  - Check container logs: docker compose logs [service-name]"
+    echo "  - Restart failed services: docker compose restart [service-name]"
     echo "  - Verify network connectivity: netstat -tlnp"
     exit 1
 fi
