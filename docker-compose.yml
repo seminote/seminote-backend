@@ -42,7 +42,7 @@ services:
     image: mongo:7
     container_name: seminote-mongo
     environment:
-      MONGO_INITDB_ROOT_USERNAME: seminote_admin
+      MONGO_INITDB_ROOT_USERNAME: seminote_user
       MONGO_INITDB_ROOT_PASSWORD: seminote_pass
       MONGO_INITDB_DATABASE: seminote_content
     ports:
@@ -62,7 +62,7 @@ services:
     image: rabbitmq:3-management
     container_name: seminote-rabbitmq
     environment:
-      RABBITMQ_DEFAULT_USER: seminote
+      RABBITMQ_DEFAULT_USER: seminote_user
       RABBITMQ_DEFAULT_PASS: seminote_pass
     ports:
       - "5672:5672"   # AMQP port
@@ -83,9 +83,9 @@ services:
     container_name: seminote-pgadmin
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@seminote.com
-      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_DEFAULT_PASSWORD: seminote_pass
     ports:
-      - "8081:80"
+      - "5050:80"
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     depends_on:
@@ -99,7 +99,7 @@ services:
     environment:
       REDIS_HOSTS: local:redis:6379
     ports:
-      - "8082:8081"
+      - "8081:8081"
     depends_on:
       - redis
     networks:
@@ -110,7 +110,7 @@ services:
     image: swaggerapi/swagger-editor
     container_name: seminote-swagger-editor
     ports:
-      - "8083:8080"
+      - "8080:8080"
     networks:
       - seminote-network
 

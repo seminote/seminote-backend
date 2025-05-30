@@ -250,6 +250,10 @@ jobs:
           --network seminote-network \
           -p 8081:8081 \
           -e REDIS_HOSTS=local:seminote-redis:6379 \
+          --health-cmd="wget --no-verbose --tries=1 --spider http://localhost:8081 || exit 1" \
+          --health-interval=10s \
+          --health-timeout=5s \
+          --health-retries=5 \
           rediscommander/redis-commander:latest
 
         # Start Swagger Editor with expected name
@@ -257,6 +261,10 @@ jobs:
           --name seminote-swagger-editor \
           --network seminote-network \
           -p 8080:8080 \
+          --health-cmd="wget --no-verbose --tries=1 --spider http://localhost:8080 || exit 1" \
+          --health-interval=10s \
+          --health-timeout=5s \
+          --health-retries=5 \
           swaggerapi/swagger-editor:latest
 
         # Wait for services to be healthy
@@ -265,6 +273,12 @@ jobs:
         timeout 60 bash -c 'until docker exec seminote-redis redis-cli ping; do sleep 2; done'
         timeout 60 bash -c 'until docker exec seminote-mongo mongosh --eval "db.runCommand(\"ping\").ok" --quiet; do sleep 2; done'
         timeout 60 bash -c 'until docker exec seminote-rabbitmq rabbitmq-diagnostics -q ping; do sleep 2; done'
+
+        # Wait for management interfaces to be ready
+        echo "⏳ Waiting for management interfaces..."
+        timeout 60 bash -c 'until curl -f http://localhost:8081 >/dev/null 2>&1; do sleep 2; done' || echo "Redis Commander may take longer to start"
+        timeout 60 bash -c 'until curl -f http://localhost:8080 >/dev/null 2>&1; do sleep 2; done' || echo "Swagger Editor may take longer to start"
+        timeout 60 bash -c 'until curl -f http://localhost:15672 >/dev/null 2>&1; do sleep 2; done' || echo "RabbitMQ Management may take longer to start"
 
         echo "✅ All services are healthy and ready!"
 
